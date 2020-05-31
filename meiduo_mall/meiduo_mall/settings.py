@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'apps.users',
 ]
 
 MIDDLEWARE = [
@@ -80,9 +81,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            # 补充jinja2模板引擎
+            'environment': 'utils.jinja2_env.jinja2_environment',
         },
-        # 补充jinja2模板引擎
-        'environment': 'utils.jinja2_env.jinja2_environment'
     },
 ]
 
