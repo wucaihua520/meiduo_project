@@ -1,6 +1,7 @@
 import re
 
 from django import http
+from django.contrib.auth import login
 from django.db import DatabaseError
 
 from django.shortcuts import render, redirect
@@ -49,6 +50,8 @@ class RegisterView(View):
             user = User.objects.create_user(username=username, password=password, mobile=mobile)
         except DatabaseError:
             return render(request,'register.html', {'register_error': '注册失败'})
+        # 实现状态保持
+        login(request, user)
         # 响应注册结果
         # return http.HttpResponse('注册成功，重定向到首页')
         return redirect(reverse('contents:index'))
