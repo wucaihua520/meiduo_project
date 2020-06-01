@@ -1,4 +1,4 @@
-var vm = new Vue({
+let vm = new Vue({
     el: '#app',
     // 修改Vue变量的读取语法，避免和django模板语法冲突
     delimiters: ['[[', ']]'],
@@ -37,12 +37,12 @@ var vm = new Vue({
     },
     methods: {
         generateUUID: function () {
-            var d = new Date().getTime();
+            let d = new Date().getTime();
             if (window.performance && typeof window.performance.now === "function") {
                 d += performance.now(); //use high-precision timer if available
             }
-            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-                var r = (d + Math.random() * 16) % 16 | 0;
+            let uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                let r = (d + Math.random() * 16) % 16 | 0;
                 d = Math.floor(d / 16);
                 return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
             });
@@ -58,19 +58,33 @@ var vm = new Vue({
         },
         // 检查用户名
         check_username: function () {
-            var re = /^[a-zA-Z0-9_-]{5,20}$/;
+            let re = /^[a-zA-Z0-9_-]{5,20}$/;
             if (re.test(this.username)) {
                 this.error_name = false;
+                let url = 'http://www.meiduo.site:8000/usernames/itcast/';
+                axios.get(url).then(response=>{
+                    console.log(response)
+                    console.log(response.data.count)
+                    if(response.data.count == 1){
+                        this.error_name = true;
+                        this.error_name_message = '用户名已存在';
+                    }else {
+                        this.error_name = false;
+
+                    }
+                }).catch(error=>{
+                    alert(error)
+                })
+
             } else {
                 this.error_name_message = '请输入5-20个字符的用户名';
                 this.error_name = true;
             }
 
-
         },
         // 检查密码
         check_password: function () {
-            var re = /^[0-9A-Za-z]{8,20}$/;
+            let re = /^[0-9A-Za-z]{8,20}$/;
             if (re.test(this.password)) {
                 this.error_password = false;
             } else {
@@ -87,7 +101,7 @@ var vm = new Vue({
         },
         // 检查手机号
         check_mobile: function () {
-            var re = /^1[345789]\d{9}$/;
+            let re = /^1[345789]\d{9}$/;
             if (re.test(this.mobile)) {
                 this.error_phone = false;
             } else {
@@ -140,7 +154,7 @@ var vm = new Vue({
             }
 
             // 向后端接口发送请求，让后端发送短信验证码
-            var url = this.host + '/sms_codes/' + this.mobile + '/?image_code=' + this.image_code + '&image_code_id=' + this.image_code_id;
+            let url = this.host + '/sms_codes/' + this.mobile + '/?image_code=' + this.image_code + '&image_code_id=' + this.image_code_id;
             axios.get(url, {
                 responseType: 'json'
             })
@@ -148,9 +162,9 @@ var vm = new Vue({
                     // 表示后端发送短信成功
                     if (response.data.code == '0') {
                         // 倒计时60秒，60秒后允许用户再次点击发送短信验证码的按钮
-                        var num = 60;
+                        let num = 60;
                         // 设置一个计时器
-                        var t = setInterval(() => {
+                        let t = setInterval(() => {
                             if (num == 1) {
                                 // 如果计时器到最后, 清除计时器对象
                                 clearInterval(t);
