@@ -61,11 +61,9 @@ let vm = new Vue({
             let re = /^[a-zA-Z0-9_-]{5,20}$/;
             if (re.test(this.username)) {
                 this.error_name = false;
-                let url = 'http://www.meiduo.site:8000/usernames/itcast/';
+                let url = 'http://www.meiduo.site:8000/usernames/' + this.username + '/';
                 axios.get(url).then(response=>{
-                    console.log(response)
-                    console.log(response.data.count)
-                    if(response.data.count == 1){
+                    if(response.data.count === 1){
                         this.error_name = true;
                         this.error_name_message = '用户名已存在';
                     }else {
@@ -101,12 +99,26 @@ let vm = new Vue({
         },
         // 检查手机号
         check_mobile: function () {
-            let re = /^1[345789]\d{9}$/;
+            let re = /^1[3-9]\d{9}$/;
             if (re.test(this.mobile)) {
-                this.error_phone = false;
+                this.error_mobile = false;
+                // let url='http://www.meiduo.site:8000/mobiles/13311112222/';
+                let url = 'http://www.meiduo.site:8000/mobiles/' + this.mobile + '/';
+                axios.get(url).then(response=>{
+                    console.log(response);
+                    console.log(response.data.count);
+                    if(response.data.count === 1){
+                        this.error_mobile = true;
+                        this.error_mobile_message = '手机号已存在';
+                    }else{
+                        this.error_mobile = false;
+                    }
+                }).catch(error=>{
+                    alert(error);
+                })
             } else {
-                this.error_mobile_message = '您输入的手机号格式不正确';
-                this.error_phone = true;
+                this.error_mobile_message = '麻烦输一下手机号呗';
+                this.error_mobile = true;
             }
 
         },
