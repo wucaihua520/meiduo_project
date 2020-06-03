@@ -69,9 +69,11 @@ class SmsCodeView(View):
         sms_code = '%06d' %random.randint(0, 999999)
         logger.info(sms_code)
         # 保存短信验证码
-        redis_conn.setex('sms_%s' % mobile, constants.SMS_CODE_EXPIRES_SECONDS, sms_code)
+        redis_conn.setex('sms_%s' % mobile, 300, sms_code)
         # 发送短信验证码
-        CCP.send_template_sms(mobile, [sms_code, constants.SMS_CODE_EXPIRES_SECONDS // 60], constants.SEND_SMS_TEMPLATE_ID)
+        # CCP.send_template_sms(mobile, [sms_code, 5], 1)
+        # celery异步发送短信验证码
+        send_sms_code.delay(mobile, sms_code)
         # 响应结果
-        return http.JsonResponse({'code': 200,
+        return http.JsonResponse({'code': '0',
                                   'msg': '短信发送成功'})
