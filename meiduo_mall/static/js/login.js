@@ -7,7 +7,7 @@ var vm = new Vue({
         error_username: false,
         error_password: false,
 		error_username_message: '请输入5-20个字符的用户名',
-		error_password_message: '请输入8-12位的密码',
+		error_password_message: '请输入8-20位的密码',
         username: '',
         password: '',
         remembered: true

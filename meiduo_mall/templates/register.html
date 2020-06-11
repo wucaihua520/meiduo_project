@@ -24,7 +24,7 @@
 		<div class="r_con fr">
 			<div class="reg_title clearfix">
 				<h1>用户注册</h1>
-				<a href="../static/login.html">登录</a>
+				<a href="login.html">登录</a>
 			</div>
 			<div class="reg_form clearfix">
 				<form method="post" class="register_form" @submit="on_submit">
@@ -59,7 +59,7 @@
 					<li>
 						<label>短信验证码:</label>
 						<input type="text" name="sms_code" id="msg_code" class="msg_input" v-model="sms_code" @blur="check_sms_code">
-						<a @click="send_sms_code" class="get_msg_code">[[sms_code_tip]]</a>
+						<a href="javascript:;" @click="send_sms_code" class="get_msg_code">[[sms_code_tip]]</a>
 						<span class="error_tip" v-show="error_sms_code">[[error_sms_code_message]]</span>
 					</li>
 					<li class="agreement">

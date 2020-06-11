@@ -1,7 +1,7 @@
 import re
 
 from django import http
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from django.db import DatabaseError
 
 from django.shortcuts import render, redirect
@@ -83,3 +83,45 @@ class MobileCountView(View):
         """
         count = User.objects.filter(mobile=mobile).count()
         return http.JsonResponse({'count': count})
+
+
+class LoginView(View):
+    """获取登录页面"""
+    def get(self, request):
+        return render(request, "login.html")
+
+    def post(self, request):
+        """
+
+        :param request: 请求对象
+        :return: 响应结果
+        """
+        # 获取参数
+        username = request.POST.get('username')
+        password = request.POST.get('pwd')
+        remembered = request.POST.get('remembered')
+        # 校验参数
+        if not all([username, password]):
+            return http.HttpResponseBadRequest('参数不全')
+        if not re.match(r'^[a-zA-Z0-9_-]{5,20}$', username):
+            return http.HttpResponseBadRequest('请输入正确的的用户名或者手机号')
+        if not re.match(r'^[0-9a-zA-Z]{8,20}$', password):
+            return http.HttpResponseBadRequest('请输入8-20位字符的密码')
+        # 认证登录用户
+        user = authenticate(username=username, password=password)
+        if user is None:
+            return render(request, 'login.html', {'errmsg': '用户名或密码错误'})
+        # 实现状态保持
+        login(request, user)
+        # 设置状态保持的周期
+        if remembered != 'on':
+            # 没有记住用户，浏览器回话结束就过期
+            request.session.set_expiry(0)
+        else:
+            # 记住用户:None表示两周后过期
+            request.session.set_expiry(None)
+
+        response = redirect(reverse("contents:index"))
+        # 注册时用户名写入到cookie，有效期15天
+        response.set_cookie('username', user.username, max_age=3600 * 24 * 15)
+        return response
