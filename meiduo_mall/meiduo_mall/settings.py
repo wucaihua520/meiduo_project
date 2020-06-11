@@ -228,3 +228,4 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 AUTHENTICATION_BACKENDS = [
     'apps.users.utils.UsernameMobileAuthBackend'
 ]
+LOGIN_URL = '/login/'

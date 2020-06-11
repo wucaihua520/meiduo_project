@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^mobiles/(?P<mobile>1[3-9]\d{9})/$', views.MobileCountView.as_view(), name='mobilecount'),
     url(r'^login/$', views.LoginView.as_view(), name='login'),
     url(r'^logout/$', views.LogoutView.as_view(), name='logout'),
+    url(r'^center/$', views.UserCenterInfoView.as_view(), name='center'),
 ]

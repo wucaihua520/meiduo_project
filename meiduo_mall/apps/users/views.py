@@ -2,6 +2,7 @@ import re
 
 from django import http
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import DatabaseError
 
 from django.shortcuts import render, redirect
@@ -137,3 +138,10 @@ class LogoutView(View):
         # 退出登录时，清除cookie的username
         response.delete_cookie('username')
         return response
+
+
+class UserCenterInfoView(LoginRequiredMixin, View):
+    """展示用户中心信息"""
+    def get(self, request):
+        return render(request, "user_center_info.html")
+
