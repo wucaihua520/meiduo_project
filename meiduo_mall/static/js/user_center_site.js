@@ -1,4 +1,4 @@
-var vm = new Vue({
+let vm = new Vue({
     el: '#app',
     // 修改Vue变量的读取语法，避免和django模板语法冲突
     delimiters: ['[[', ']]'],
@@ -41,9 +41,9 @@ var vm = new Vue({
     },
     watch: {
         // 监听到省份id变化
-        'form_address.province_id': function () {
+        'form_address.province_id': function() {
             if (this.form_address.province_id) {
-                var url = this.host + '/areas/?area_id=' + this.form_address.province_id;
+                let url = this.host + '/areas/?area_id=' + this.form_address.province_id;
                 axios.get(url, {
                     responseType: 'json'
                 })
@@ -64,7 +64,7 @@ var vm = new Vue({
         // 监听到城市id变化
         'form_address.city_id': function () {
             if (this.form_address.city_id) {
-                var url = this.host + '/areas/?area_id=' + this.form_address.city_id;
+                let url = this.host + '/areas/?area_id=' + this.form_address.city_id;
                 axios.get(url, {
                     responseType: 'json'
                 })
@@ -86,7 +86,7 @@ var vm = new Vue({
     methods: {
         // 获取省份数据
         get_provinces(){
-            var url = this.host + '/areas/';
+            let url = this.host + '/areas/';
             axios.get(url, {
                 responseType: 'json'
             })
@@ -118,7 +118,7 @@ var vm = new Vue({
             }
         },
         check_mobile(){
-            var re = /^1[345789]\d{9}$/;
+            let re = /^1[345789]\d{9}$/;
             if (re.test(this.form_address.mobile)) {
                 this.error_mobile = false;
             } else {
@@ -127,7 +127,7 @@ var vm = new Vue({
         },
         check_tel(){
             if (this.form_address.tel) {
-                var re = /^(0[0-9]{2,3}-)?([2-9][0-9]{6,7})+(-[0-9]{1,4})?$/;
+                let re = /^(0[0-9]{2,3}-)?([2-9][0-9]{6,7})+(-[0-9]{1,4})?$/;
                 if (re.test(this.form_address.tel)) {
                     this.error_tel = false;
                 } else {
@@ -139,7 +139,7 @@ var vm = new Vue({
         },
         check_email(){
             if (this.form_address.email) {
-                var re = /^[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$/;
+                let re = /^[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$/;
                 if (re.test(this.form_address.email)) {
                     this.error_email = false;
                 } else {
@@ -198,7 +198,7 @@ var vm = new Vue({
                 // 注意：0 == '';返回true; 0 === '';返回false;
                 if (this.editing_address_index === '') {
                     // 新增地址
-                    var url = this.host + '/addresses/create/';
+                    let url = this.host + '/addresses/create/';
                     axios.post(url, this.form_address, {
                         headers: {
                             'X-CSRFToken': getCookie('csrftoken')
@@ -228,7 +228,7 @@ var vm = new Vue({
                         });
                 } else {
                     // 修改地址
-                    var url = this.host + '/addresses/' + this.addresses[this.editing_address_index].id + '/';
+                    let url = this.host + '/addresses/' + this.addresses[this.editing_address_index].id + '/';
                     axios.put(url, this.form_address, {
                         headers: {
                             'X-CSRFToken': getCookie('csrftoken')
@@ -259,7 +259,7 @@ var vm = new Vue({
         },
         // 删除地址
         delete_address(index){
-            var url = this.host + '/addresses/' + this.addresses[index].id + '/';
+            let url = this.host + '/addresses/' + this.addresses[index].id + '/';
             axios.delete(url, {
                 headers: {
                     'X-CSRFToken': getCookie('csrftoken')
@@ -282,7 +282,7 @@ var vm = new Vue({
         },
         // 设置默认地址
         set_default(index){
-            var url = this.host + '/addresses/' + this.addresses[index].id + '/default/';
+            let url = this.host + '/addresses/' + this.addresses[index].id + '/default/';
             axios.put(url, {}, {
                 headers: {
                     'X-CSRFToken': getCookie('csrftoken')
@@ -317,7 +317,7 @@ var vm = new Vue({
             if (!this.input_title) {
                 alert("请填写标题后再保存！");
             } else {
-                var url = this.host + '/addresses/' + this.addresses[index].id + '/title/';
+                let url = this.host + '/addresses/' + this.addresses[index].id + '/title/';
                 axios.put(url, {
                     title: this.input_title
                 }, {

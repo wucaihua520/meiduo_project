@@ -224,3 +224,9 @@ class EmailActiveView(View):
         # return http.HttpResponse('激活成功')
         return redirect(reverse('users:center'))
 
+
+class UserCenterSiteView(LoginRequiredMixin, View):
+    """用户收货地址"""
+
+    def get(self, request):
+        return render(request, "user_center_site.html")
