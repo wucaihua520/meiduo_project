@@ -4,12 +4,14 @@ from venv import logger
 from django import http
 from django.http import HttpResponseBadRequest
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # Create your views here.
+from django.urls import reverse
 from django.views import View
 from django_redis import get_redis_connection
 
+from apps.users.utils import check_verify_email_token
 from apps.verifications import constants
 from libs.captcha.captcha import captcha
 from libs.yuntongxun.sms import CCP
@@ -71,9 +73,12 @@ class SmsCodeView(View):
         # 保存短信验证码
         redis_conn.setex('sms_%s' % mobile, 300, sms_code)
         # 发送短信验证码
-        CCP.send_template_sms(mobile, [sms_code, 5], 1)
+        CCP().send_template_sms(mobile, [sms_code, 5], 1)
         # # celery异步发送短信验证码
         # send_sms_code.delay(mobile, sms_code)
         # 响应结果
         return http.JsonResponse({'code': '0',
                                   'errmsg': '短信发送成功'})
+
+
+

@@ -1,3 +1,4 @@
+import json
 import re
 
 from django import http
@@ -10,6 +11,9 @@ from django.urls import reverse
 from django.views import View
 
 from apps.users.models import User
+from apps.users.utils import generate_verify_email_url, check_verify_email_token
+from celery_tasks.sms.tasks import logger
+from utils.views import LoginRequiredJSONMixin
 
 
 class RegisterView(View):
@@ -50,7 +54,7 @@ class RegisterView(View):
         try:
             user = User.objects.create_user(username=username, password=password, mobile=mobile)
         except DatabaseError:
-            return render(request,'register.html', {'register_error': '注册失败'})
+            return render(request, 'register.html', {'register_error': '注册失败'})
         # 实现状态保持
         login(request, user)
         # 响应注册结果
@@ -143,5 +147,80 @@ class LogoutView(View):
 class UserCenterInfoView(LoginRequiredMixin, View):
     """展示用户中心信息"""
     def get(self, request):
-        return render(request, "user_center_info.html")
+        """提供个人信息界面"""
+        context = {
+            'username': request.user.username,
+            'mobile': request.user.mobile,
+            'email': request.user.email,
+            'email_active': request.user.email_active
+        }
+        return render(request, "user_center_info.html", context=context)
+
+
+class EmailView(LoginRequiredJSONMixin, View):
+    """添加邮箱"""
+    def put(self, request):
+        """实现添加邮箱逻辑"""
+        # 接收axios
+        body = request.body
+        body_str = body.decode()
+        data = json.loads(body_str)
+        # 检验参数
+        email = data.get('email')
+        if not email:
+            return http.HttpResponseBadRequest('缺少email参数')
+        if not re.match(r"^[a-z0-9][\w\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$", email):
+            return http.HttpResponseBadRequest('email参数有误')
+        # 更新数据
+        try:
+            request.user.email = email
+            request.user.save()
+        except Exception as e:
+            logger.error(e)
+            return http.JsonResponse({'code': 0,
+                                      'errmsg': '添加邮箱失败'})
+        # 给邮箱发送链接
+        # from django.core.mail import send_mail
+        # # subject, message, from_email, recipient_list
+        # subject = "美多商城激活邮件"
+        # message = ""
+        # from_email = "欢乐玩家<wu_cai_hua@163.com>"
+        # # 收件人列表
+        # recipient_list = ["wu_cai_hua@163.com"]
+        # html_message = "<a href='http://www.huyouni.com'>戳我有惊喜</a>"
+        # send_mail(subject=subject,
+        #           message=message,
+        #           from_email=from_email,
+        #           recipient_list=recipient_list,
+        #           html_message=html_message)
+        # 异步发送验证邮件
+        from celery_tasks.email.tasks import send_verify_email
+        verify_url = generate_verify_email_url(request.user)
+        send_verify_email.delay(email, verify_url)
+        # 响应添加邮箱结果
+        return http.JsonResponse({"code": 0,
+                                  "errmsg": "添加邮箱成功"})
+
+
+class EmailActiveView(View):
+    """验证邮箱"""
+    def get(self, request):
+        # 接收参数
+        token = request.GET.get('token')
+        # 校验参数: 判断token是否为空和过期,提取user
+        if not token:
+            return http.HttpResponseBadRequest('缺少token')
+        user = check_verify_email_token(token)
+        if not user:
+            return http.HttpResponseBadRequest('无效的token')
+        # 修改email_active的值位true
+        try:
+            user.email_active = True
+            user.save()
+        except Exception as e:
+            logger.error(e)
+            return http.HttpResponseServerError('激活邮件失败')
+        # 返回验证结果
+        # return http.HttpResponse('激活成功')
+        return redirect(reverse('users:center'))
 

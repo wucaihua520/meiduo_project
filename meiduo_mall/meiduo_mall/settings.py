@@ -229,3 +229,17 @@ AUTHENTICATION_BACKENDS = [
     'apps.users.utils.UsernameMobileAuthBackend'
 ]
 LOGIN_URL = '/login/'
+
+
+# ######################配置邮件服务#################################
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 25
+# 发送邮件的邮箱
+EMAIL_HOST_USER = 'wu_cai_hua@163.com'
+# 在邮箱中设置的客户端授权密码
+EMAIL_HOST_PASSWORD = 'BBGBGCYIOKDBULBE'
+# 收件人看到的发件人
+EMAIL_FROM = '美多商城<wu_cai_hua@163.com>'
+
+EMAIL_VERIFY_URL = "http://www.meiduo.site:8000/emailsactive/"
