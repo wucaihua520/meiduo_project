@@ -11,6 +11,10 @@ urlpatterns = [
     url(r'^center/$', views.UserCenterInfoView.as_view(), name='center'),
     url(r'^emails/$', views.EmailView.as_view(), name='emails'),
     url(r'^emailsactive/$', views.EmailActiveView.as_view(), name='emailsactive'),
-    url(r'^address/$', views.UserCenterSiteView.as_view(), name='address'),
+    url(r'^addresses/$', views.AddressView.as_view(), name='addresses'),
+    url(r'^addresses/create/$', views.CreateAddressView.as_view(), name='create'),
+    url(r'^addresses/(?P<address_id>\d+)/default/$', views.DefaultAddressView.as_view(), name='default'),
+    url(r'^addresses/(?P<address_id>\d+)/$', views.UpdateDstroyAddressView.as_view(), name='update'),
+    url(r'^addresses/(?P<address_id>\d+)/title/$', views.UpdateTitleAddressView.as_view(), name='title'),
 
 ]

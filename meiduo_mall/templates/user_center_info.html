@@ -18,8 +18,6 @@
 			<div class="fr">
 				<div v-if="username" class="login_btn fl">
 					欢迎您：<em>[[username]]</em>
-                    <span>|</span>
-					<a href="{{ url("users:logout") }}">退出</a>
 				</div>
 				<div v-else class="login_btn fl">
                     <a href="{{ url("users:login") }}">登录</a>
@@ -33,7 +31,7 @@
 					<span>|</span>
 					<a href="../static/cart.html">我的购物车</a>
 					<span>|</span>
-					<a href="../static/user_center_order.html">我的订单</a>
+					<a href="user_center_order.html">我的订单</a>
 				</div>
 			</div>
 		</div>		
@@ -59,10 +57,10 @@
 		<div class="left_menu_con clearfix">
 			<h3>用户中心</h3>
 			<ul>
-				<li><a href="user_center_info.html" class="active">· 个人信息</a></li>
-				<li><a href="../static/user_center_order.html">· 全部订单</a></li>
-				<li><a href="{{ url("areas:areas") }}">· 收货地址</a></li>
-				<li><a href="../static/user_center_pass.html">· 修改密码</a></li>
+				<li><a href="{{ url("users:center") }}" class="active">· 个人信息</a></li>
+				<li><a href="user_center_order.html">· 全部订单</a></li>
+				<li><a href="{{ url("users:addresses") }}">· 收货地址</a></li>
+				<li><a href="user_center_pass.html">· 修改密码</a></li>
 			</ul>
 		</div>
 		<div class="right_content clearfix">

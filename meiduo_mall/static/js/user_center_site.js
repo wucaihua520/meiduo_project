@@ -24,9 +24,11 @@ let vm = new Vue({
         error_mobile: false,
         error_tel: false,
         error_email: false,
-        addresses: [],
+        // addresses: [],
         editing_address_index: '',
-        default_address_id: '',
+        // default_address_id: '',
+        addresses: JSON.parse(JSON.stringify(addresses)),
+        default_address_id: default_address_id,
         edit_title_index: '',
         input_title: '',
         add_title:'新  增'
@@ -48,7 +50,7 @@ let vm = new Vue({
                     responseType: 'json'
                 })
                     .then(response => {
-                        if (response.data.code == '0') {
+                        if (response.data.code === '0') {
                             this.cities = response.data.sub_data.subs;
                         } else {
                             console.log(response.data);
@@ -69,7 +71,7 @@ let vm = new Vue({
                     responseType: 'json'
                 })
                     .then(response => {
-                        if (response.data.code == '0') {
+                        if (response.data.code === '0') {
                             this.districts = response.data.sub_data.subs;
                         } else {
                             console.log(response.data);
@@ -91,7 +93,7 @@ let vm = new Vue({
                 responseType: 'json'
             })
                 .then(response => {
-                    if (response.data.code == '0') {
+                    if (response.data.code === '0') {
                         this.provinces = response.data.province_list;
                     } else {
                         console.log(response.data);
@@ -206,18 +208,18 @@ let vm = new Vue({
                         responseType: 'json'
                     })
                         .then(response => {
-                            if (response.data.code == '0') {
+                            if (response.data.code === '0') {
                                 // location.reload();
                                 // 局部刷新界面：展示所有地址信息，将新的地址添加到头部
                                 this.addresses.splice(0, 0, response.data.address);
                                 this.is_show_edit = false;
-                            } else if (response.data.code == '4101') {
+                            } else if (response.data.code === '4101') {
                                 location.href = '/login/?next=/addresses/';
-                            } else if (response.data.code == '4007') {
+                            } else if (response.data.code === '4007') {
                                 this.error_mobile = true;
-                            } else if (response.data.code == '5002') {
+                            } else if (response.data.code === '5002') {
                                 this.error_tel = true;
-                            } else if (response.data.code == '5001') {
+                            } else if (response.data.code === '5001') {
                                 this.error_email = true;
                             } else { // 4002 4003 5000 (以提示框的形式出现)
                                 alert(response.data.errmsg);
@@ -236,16 +238,16 @@ let vm = new Vue({
                         responseType: 'json'
                     })
                         .then(response => {
-                            if (response.data.code == '0') {
+                            if (response.data.code === '0') {
                                 this.addresses[this.editing_address_index] = response.data.address;
                                 this.is_show_edit = false;
-                            } else if (response.data.code == '4101') {
+                            } else if (response.data.code === '4101') {
                                 location.href = '/login/?next=/addresses/';
-                            } else if (response.data.code == '4007') {
+                            } else if (response.data.code === '4007') {
                                 this.error_mobile = true;
-                            } else if (response.data.code == '5002') {
+                            } else if (response.data.code === '5002') {
                                 this.error_tel = true;
-                            } else if (response.data.code == '5001') {
+                            } else if (response.data.code === '5001') {
                                 this.error_email = true;
                             } else { // 4003 5000 (以弹框的形式出现)
                                 alert(response.data.errmsg);
@@ -267,10 +269,10 @@ let vm = new Vue({
                 responseType: 'json'
             })
                 .then(response => {
-                    if (response.data.code == '0') {
+                    if (response.data.code === '0') {
                         // 删除对应的标签
                         this.addresses.splice(index, 1);
-                    } else if (response.data.code == '4101') {
+                    } else if (response.data.code === '4101') {
                         location.href = '/login/?next=/addresses/';
                     } else {
                         alert(response.data.errmsg);
@@ -290,10 +292,10 @@ let vm = new Vue({
                 responseType: 'json'
             })
                 .then(response => {
-                    if (response.data.code == '0') {
+                    if (response.data.code === '0') {
                         // 设置默认地址标签
                         this.default_address_id = this.addresses[index].id;
-                    } else if (response.data.code == '4101') {
+                    } else if (response.data.code === '4101') {
                         location.href = '/login/?next=/addresses/';
                     } else {
                         alert(response.data.errmsg);
@@ -327,11 +329,11 @@ let vm = new Vue({
                     responseType: 'json'
                 })
                     .then(response => {
-                        if (response.data.code == '0') {
+                        if (response.data.code === '0') {
                             // 更新地址title
                             this.addresses[index].title = this.input_title;
                             this.cancel_title();
-                        } else if (response.data.code == '4101') {
+                        } else if (response.data.code === '4101') {
                             location.href = '/login/?next=/addresses/';
                         } else {
                             alert(response.data.errmsg);
