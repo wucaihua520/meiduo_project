@@ -445,3 +445,39 @@ class UpdateTitleAddressView(View):
         return http.JsonResponse({'code': RETCODE.OK, 'errmsg': '设置地址标题成功'})
 
 
+class UpdatePasswordView(LoginRequiredMixin, View):
+    """获取修改密码界面"""
+    def get(self, request):
+        return render(request, 'user_center_pass.html')
+    """修改密码业务逻辑实现"""
+    def post(self, request):
+        # 获取参数
+        old_password = request.POST.get('old_password')
+        new_password = request.POST.get('new_password')
+        new_password2 = request.POST.get('new_password2')
+        # 校验参数
+        if not all([old_password, new_password, new_password2]):
+            return http.HttpResponseForbidden('参数不全')
+        if not re.match(r'^[0-9a-zA-Z_-]{8,20}$', new_password):
+            return http.HttpResponseBadRequest('请输入8-20位的密码')
+        if new_password != new_password2:
+            return http.HttpResponseBadRequest('两次输入的密码不一致')
+        # 判断旧密码是否正确
+        if not request.user.check_password(old_password):
+            return render(request, 'user_center_pass.html', {'origin_password_errmsg': '请输入正确的旧密码'})
+        # 更新新密码
+        try:
+            request.user.set_password(new_password)
+            request.user.save()
+        except Exception as e:
+            logger.error(e)
+            return render(request, 'user_center_pass.html', {'change_password_errmsg': '修改新密码失败'})
+        # 退出登录, 删除登录信息
+        logout(request)
+        # 跳转到登录页面
+        response = redirect(reverse('users:login'))
+        # 删除cookie
+        response.delete_cookie('username')
+        return response
+
+

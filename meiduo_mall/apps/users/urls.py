@@ -16,5 +16,6 @@ urlpatterns = [
     url(r'^addresses/(?P<address_id>\d+)/default/$', views.DefaultAddressView.as_view(), name='default'),
     url(r'^addresses/(?P<address_id>\d+)/$', views.UpdateDstroyAddressView.as_view(), name='update'),
     url(r'^addresses/(?P<address_id>\d+)/title/$', views.UpdateTitleAddressView.as_view(), name='title'),
+    url(r'^pass/$', views.UpdatePasswordView.as_view(), name='password'),
 
 ]

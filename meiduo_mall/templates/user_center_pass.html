@@ -16,16 +16,16 @@
 			<div class="welcome fl">欢迎来到美多商城!</div>
 			<div class="fr">
 				<div class="login_info fl">
-					欢迎您：<em>张 山</em>
+					欢迎您：<em>张  山</em>
 				</div>
 				<div class="login_btn fl">
-					<a href="login.html">登录</a>
+					<a href="{{ url("users:login") }}">登录</a>
 					<span>|</span>
-					<a href="register.html">注册</a>
+					<a href="{{ url("users:register") }}">注册</a>
 				</div>
 				<div class="user_link fl">
 					<span>|</span>
-					<a href="user_center_info.html">用户中心</a>
+					<a href="{{ url("users:center") }}">用户中心</a>
 					<span>|</span>
 					<a href="../static/cart.html">我的购物车</a>
 					<span>|</span>
@@ -55,31 +55,38 @@
 		<div class="left_menu_con clearfix">
 			<h3>用户中心</h3>
 			<ul>
-				<li><a href="user_center_info.html">· 个人信息</a></li>
+				<li><a href="{{ url("users:center") }}">· 个人信息</a></li>
 				<li><a href="user_center_order.html">· 全部订单</a></li>
-                <li><a href="user_center_site.html">· 收货地址</a></li>
-                <li><a href="user_center_pass.html" class="active">· 修改密码</a></li>
+                <li><a href="{{ url("users:addresses") }}">· 收货地址</a></li>
+                <li><a href="{{ url("users:password") }}" class="active">· 修改密码</a></li>
 			</ul>
 		</div>
 		<div class="right_content clearfix">
 			<div class="info_con clearfix">
 				<h3 class="common_title2">修改密码</h3>
 				<div class="site_con pass_change_con">			
-                    <form class="change_pwd">
+                     <form class="change_pwd" method="post" @submit="on_submit" v-cloak>
+                        {{ csrf_input }}
                         <div class="form_group">
                             <label>当前密码：</label>
-                            <input type="password" class="old_pwd" name="old_pwd">
-                            <span class="old_pwd_error">请输入8-12位的密码</span>
+                            <input type="password" v-model="old_pwd" @blur="check_opwd" name="old_password">
+                                                <span v-show="error_opwd" class="old_pwd_error">密码最少8位，最长20位</span>
+                            {% if origin_password_errmsg %}
+                                <span class="old_pwd_error">{{ origin_password_errmsg }}</span>
+                            {% endif %}
                         </div>
                         <div class="form_group">
                             <label>新密码：</label>
-                            <input type="password" class="new_pwd" name="new_pwd">
-                            <span class="new_pwd_error">请输入8-12位的密码</span>
+                        <input type="password" v-model="new_pwd" @blur="check_pwd" name="new_password">
+                        <span v-show="error_pwd" class="new_pwd_error">密码不满足5-20个字符</span>
                         </div>
                         <div class="form_group">
                             <label>确认新密码：</label>
-                            <input type="password" class="new_cpwd" name="new_cpwd">
-                            <span class="new_cpwd_error">两次输入的密码不一致</span>
+                            <input type="password" v-model="new_cpwd" @blur="check_cpwd" name="new_password2">
+                                                <span v-show="error_cpwd" class="new_cpwd_error">两次输入的密码不一致</span>
+                            {% if change_password_errmsg %}
+                                <span class="new_cpwd_error">{{ change_password_errmsg }}</span>
+                            {% endif %}
                         </div>
                         <input type="submit" name="" value="确 定" class="info_submit">
                         <input type="reset" name="" value="取 消" class="info_submit info_reset">
