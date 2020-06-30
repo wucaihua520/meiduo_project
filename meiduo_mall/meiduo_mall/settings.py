@@ -246,3 +246,11 @@ EMAIL_HOST_PASSWORD = 'BBGBGCYIOKDBULBE'
 EMAIL_FROM = '美多商城<wu_cai_hua@163.com>'
 
 EMAIL_VERIFY_URL = "http://www.meiduo.site:8000/emailsactive/"
+
+
+# 指定自定义的Django文件存储类
+DEFAULT_FILE_STORAGE = 'utils.fastdfs.storage.FastDFSStorage'
+
+# FastDFS相关参数
+# FDFS_BASE_URL = 'http://192.168.103.158:8888/'
+FDFS_BASE_URL = 'http://image.meiduo.site:8888/'
