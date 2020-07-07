@@ -1,4 +1,4 @@
-let vm = new Vue({
+var vm = new Vue({
     el: '#app',
     // 修改Vue变量的读取语法，避免和django模板语法冲突
     delimiters: ['[[', ']]'],
@@ -37,12 +37,12 @@ let vm = new Vue({
     },
     methods: {
         generateUUID: function () {
-            let d = new Date().getTime();
+            var d = new Date().getTime();
             if (window.performance && typeof window.performance.now === "function") {
                 d += performance.now(); //use high-precision timer if available
             }
-            let uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-                let r = (d + Math.random() * 16) % 16 | 0;
+            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = (d + Math.random() * 16) % 16 | 0;
                 d = Math.floor(d / 16);
                 return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
             });
@@ -61,64 +61,97 @@ let vm = new Vue({
             let re = /^[a-zA-Z0-9_-]{5,20}$/;
             if (re.test(this.username)) {
                 this.error_name = false;
-                let url = 'http://www.meiduo.site:8000/usernames/' + this.username + '/';
-                axios.get(url).then(response=>{
-                    if(response.data.count === 1){
+
+            // 发送axios请求,局部验证用户名是否存在
+            let url='http://www.meiduo.site:8000/usernames/' + this.username + '/';
+            // .then 是成功的回调
+            // .catch 是失败的回调
+            axios.get(url,{
+                    responseType: 'json'
+                    })
+                .then(response => {
+                    console.log(response);
+                    console.log(response.data.count);
+                    if (response.data.count == 1){
                         this.error_name = true;
                         this.error_name_message = '用户名已存在';
+                        // this.error_name = true;
                     }else {
                         this.error_name = false;
-
                     }
-                }).catch(error=>{
+                })
+                .catch(error=>{
                     alert(error)
                 })
-
-            } else {
+            } else if (this.username == ''){
+                this.error_name_message = '请输入用户名';
+                this.error_name = true;
+            }else {
                 this.error_name_message = '请输入5-20个字符的用户名';
                 this.error_name = true;
             }
-
         },
         // 检查密码
-        check_password: function () {
+         check_password: function () {
             let re = /^[0-9A-Za-z]{8,20}$/;
             if (re.test(this.password)) {
-                this.error_password = false;
-            } else {
+                if(this.password == this.username){
+                    this.error_password_message = '用户名和密码不能相同';
+                    this.error_password = true;
+                    this.error_check_password = true;
+            }else{this.error_password = false;}
+            }else if(this.password == ''){
+                this.error_password_message = '请输入密码';
+                this.error_password = true;
+            }else {
+                this.error_password_message = '请输入8-20位的密码';
                 this.error_password = true;
             }
         },
         // 确认密码
         check_password2: function () {
-            if (this.password !== this.password2) {
+            if (this.password2 == ''){
+                this.error_password2_message = '请确认密码';
+                this.error_password2 = true;
                 this.error_check_password = true;
-                this.error_password2_message = "两次输入的密码不一致"
-            } else {
+            } else if(this.password != this.password2) {
                 this.error_check_password = true;
+                this.error_password2_message = '两次输入的密码不一致';
+                this.error_password2 = true;
+            }else {
+                this.error_check_password = false;
+                this.error_password2 = false;
             }
         },
         // 检查手机号
-        check_mobile: function () {
-            let re = /^1[3-9]\d{9}$/;
+         check_mobile: function () {
+            let re = /^[1]([3-9])[0-9]{9}$/;
             if (re.test(this.mobile)) {
                 this.error_mobile = false;
-                // let url='http://www.meiduo.site:8000/mobiles/13311112222/';
-                let url = 'http://www.meiduo.site:8000/mobiles/' + this.mobile + '/';
-                axios.get(url).then(response=>{
-                    console.log(response);
-                    console.log(response.data.count);
-                    if(response.data.count === 1){
-                        this.error_mobile = true;
+
+            let url = 'http://www.meiduo.site:8000/mobiles/' + this.mobile +'/';
+            // let url = 'http://www.meiduo.site:8000/usernames/' + this.username + '/'
+            axios.get(url,{
+                responseType: 'json'
+                })
+                .then(response =>{
+                     if(response.data.count == 1){
+
                         this.error_mobile_message = '手机号已存在';
-                    }else{
+                        this.error_mobile = true;
+                    }else {
                         this.error_mobile = false;
                     }
-                }).catch(error=>{
-                    alert(error);
                 })
-            } else {
-                this.error_mobile_message = '麻烦输一下手机号呗';
+                .catch(error => {
+                    alert('手机号有误')
+                    }
+                )
+            } else if(this.mobile == ''){
+                this.error_mobile_message = '请输入手机号';
+                this.error_mobile = true;
+            }else {
+                this.error_mobile_message = '您输入的手机号格式不正确';
                 this.error_mobile = true;
             }
 
@@ -136,8 +169,8 @@ let vm = new Vue({
         // 检查短信验证码
         check_sms_code: function () {
             if (!this.sms_code) {
-                this.error_sms_code = true;
                 this.error_sms_code_message = '请填写短信验证码';
+                this.error_sms_code = true;
             } else {
                 this.error_sms_code = false;
             }
@@ -151,63 +184,63 @@ let vm = new Vue({
             }
         },
         // 发送手机短信验证码
-        send_sms_code(){
-         // 避免重复点击
-        if (this.sending_flag == true) {
-            return;
-        }
-        this.sending_flag = true;
+        send_sms_code: function () {
+            if (this.sending_flag == true) {
+                return;
+            }
+            this.sending_flag = true;
 
-        // 校验参数
-        this.check_mobile();
-        this.check_image_code();
-        if (this.error_mobile == true || this.error_image_code == true) {
-            this.sending_flag = false;
-            return;
-        }
+            // 校验参数，保证输入框有数据填写
+            this.check_mobile();
+            this.check_image_code();
 
-        // 向后端接口发送请求，让后端发送短信验证码
-        let url = this.host + '/sms_codes/' + this.mobile + '/?image_code=' + this.image_code + '&image_code_id=' + this.image_code_id;
-        axios.get(url, {
-            responseType: 'json'
-        })
-            .then(response => {
-                // 表示后端发送短信成功
-                if (response.data.code == '0') {
-                    // 倒计时60秒，60秒后允许用户再次点击发送短信验证码的按钮
-                    let num = 60;
-                    // 设置一个计时器
-                    let t = setInterval(() => {
-                        if (num == 1) {
-                            // 如果计时器到最后, 清除计时器对象
-                            clearInterval(t);
-                            // 将点击获取验证码的按钮展示的文本回复成原始文本
-                            this.sms_code_tip = '获取短信验证码';
-                            // 将点击按钮的onclick事件函数恢复回去
-                            this.sending_flag = false;
-                        } else {
-                            num -= 1;
-                            // 展示倒计时信息
-                            this.sms_code_tip = num + '秒';
-                        }
-                    }, 1000, 60)
-                } else {
-                    if (response.data.code == '4001') {
-                        this.error_image_code_message = response.data.errmsg;
-                        this.error_image_code = true;
-                    } else { // 4002
-                        this.error_sms_code_message = response.data.errmsg;
-                        this.error_sms_code = true;
-                    }
-                    this.generate_image_code();
-                    this.sending_flag = false;
-                }
-            })
-            .catch(error => {
-                console.log(error.response);
+            if (this.error_phone == true || this.error_image_code == true) {
                 this.sending_flag = false;
+                return;
+            }
+
+            // 向后端接口发送请求，让后端发送短信验证码
+            var url = this.host + '/sms_codes/' + this.mobile + '/?image_code=' + this.image_code + '&image_code_id=' + this.image_code_id;
+            axios.get(url, {
+                responseType: 'json'
             })
-    },
+                .then(response => {
+                    // 表示后端发送短信成功
+                    if (response.data.code == '0') {
+                        // 倒计时60秒，60秒后允许用户再次点击发送短信验证码的按钮
+                        var num = 60;
+                        // 设置一个计时器
+                        var t = setInterval(() => {
+                            if (num == 1) {
+                                // 如果计时器到最后, 清除计时器对象
+                                clearInterval(t);
+                                // 将点击获取验证码的按钮展示的文本回复成原始文本
+                                this.sms_code_tip = '获取短信验证码';
+                                // 将点击按钮的onclick事件函数恢复回去
+                                this.sending_flag = false;
+                            } else {
+                                num -= 1;
+                                // 展示倒计时信息
+                                this.sms_code_tip = num + '秒';
+                            }
+                        }, 1000, 60)
+                    } else {
+                        if (response.data.code == '4001') {
+                            this.error_image_code_message = response.data.errmsg;
+                            this.error_image_code = true;
+                        } else { // 4002
+                            this.error_sms_code_message = response.data.errmsg;
+                            this.error_sms_code = true;
+                        }
+                        this.generate_image_code();
+                        this.sending_flag = false;
+                    }
+                })
+                .catch(error => {
+                    console.log(error.response);
+                    this.sending_flag = false;
+                })
+        },
         // 表单提交
         on_submit(){
             this.check_username();

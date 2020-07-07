@@ -33,5 +33,5 @@ class FastDFSStorage(Storage):
         :param name: 要读取文件的引用: group1/M00/00/00/wKjHul7p18uAMi3NAApmwGu4ayE963.jpg
         :return:    http://192.168.199.186:8888/group1/M00/00/00/wKjHul7p18uAMi3NAApmwGu4ayE963.jpg
         """
-        # return 'http://192.168.199.186:8888/' + name
+        # return 'http://192.168.60.128:8888/' + name
         return self.fdfs_base_url + name

@@ -170,7 +170,7 @@ class EmailView(LoginRequiredJSONMixin, View):
         email = data.get('email')
         if not email:
             return http.HttpResponseBadRequest('缺少email参数')
-        if not re.match(r"^[a-z0-9][\w\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$", email):
+        if not re.match(r"^[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$", email):
             return http.HttpResponseBadRequest('email参数有误')
         # 更新数据
         try:

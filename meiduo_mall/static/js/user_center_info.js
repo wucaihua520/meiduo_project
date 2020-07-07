@@ -17,9 +17,6 @@ var vm = new Vue({
     },
     // ES6语法
     mounted() {
-        // 获取cookie中的用户名
-        this.username=getCookie('username');
-        console.log(this.username);
         // 额外处理用户数据
         this.email_active = (this.email_active=='True') ? true : false;
         this.set_email = (this.email=='') ? true : false;
@@ -30,7 +27,7 @@ var vm = new Vue({
     methods: {
         // 检查email格式
         check_email(){
-            var re = /^[a-z0-9][\w\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$/;
+            var re = /^[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$/;
             if (re.test(this.email)) {
                 this.error_email = false;
             } else {
@@ -60,11 +57,11 @@ var vm = new Vue({
                         responseType: 'json'
                     })
                     .then(response => {
-                        if (response.data.code === '0') {
+                        if (response.data.code == '0') {
                             this.set_email = false;
                             this.send_email_btn_disabled = true;
                             this.send_email_tip = '已发送验证邮件';
-                        } else if (response.data.code === '4101') {
+                        } else if (response.data.code == '4101') {
                             location.href = '/login/?next=/info/';
                         } else { // 5000 5001
                             this.error_email_message = response.data.errmsg;
